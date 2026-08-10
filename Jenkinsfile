@@ -20,8 +20,8 @@ pipeline {
             steps {
                 script {
                     echo "Building Docker Image: ${DOCKER_IMAGE}:${IMAGE_TAG}"
-                    sh "docker build -t ${DOCKER_IMAGE}:${IMAGE_TAG} ."
-                    sh "docker tag ${DOCKER_IMAGE}:${IMAGE_TAG} ${DOCKER_IMAGE}:latest"
+                    bat "docker build -t ${DOCKER_IMAGE}:${IMAGE_TAG} ."
+                    bat "docker tag ${DOCKER_IMAGE}:${IMAGE_TAG} ${DOCKER_IMAGE}:latest"
                 }
             }
         }
@@ -31,9 +31,9 @@ pipeline {
                 script {
                     // 'docker-hub-credentials' is the ID of your login stored inside Jenkins
                     withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                        sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
-                        sh "docker push ${DOCKER_IMAGE}:${IMAGE_TAG}"
-                        sh "docker push ${DOCKER_IMAGE}:latest"
+                        bat "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
+                        bat "docker push ${DOCKER_IMAGE}:${IMAGE_TAG}"
+                        bat "docker push ${DOCKER_IMAGE}:latest"
                     }
                 }
             }
@@ -43,7 +43,7 @@ pipeline {
     post {
         always {
             // Cleans up local Docker images on the Jenkins server to save space
-            sh "docker logout"
+            bat "docker logout"
         }
     }
 }
