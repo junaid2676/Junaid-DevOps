@@ -16,15 +16,14 @@ pipeline {
             }
         }
 
-        stage('2. Build Docker Image') {
-            steps {
-                script {
-                    echo "Building Docker Image: ${DOCKER_IMAGE}:${IMAGE_TAG}"
-                    bat "docker build -t ${DOCKER_IMAGE}:${IMAGE_TAG} ."
-                    bat "docker tag ${DOCKER_IMAGE}:${IMAGE_TAG} ${DOCKER_IMAGE}:latest"
-                }
-            }
+     stage('2. Build Docker Image') {
+    steps {
+        script {
+            echo "Building Docker Image: ${DOCKER_IMAGE}:${IMAGE_TAG}"
+            bat '"C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe" build -t junaid2676/devops:v1 .'
         }
+    }
+}
 
         stage('3. Push to Docker Hub') {
             steps {
