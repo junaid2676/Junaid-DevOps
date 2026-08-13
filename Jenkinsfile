@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     environment {
-        // System32, PowerShell, and Docker Desktop paths combined
         PATH = "C:\\Windows\\System32;C:\\Windows\\System32\\WindowsPowerShell\\v1.0;C:\\Users\\LAPTOP MART\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin;${env.PATH}"
         
         DOCKER_IMAGE = 'junaid2676/devops'
@@ -30,7 +29,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                        powershell '$env:DOCKER_PASS | docker login -u $env:DOCKER_USER --password-stdin'
+                        powershell '$OutputEncoding = [System.Text.Encoding]::UTF8; $env:DOCKER_PASS | docker login -u $env:DOCKER_USER --password-stdin'
                         powershell "docker push ${DOCKER_IMAGE}:${IMAGE_TAG}"
                         powershell "docker push ${DOCKER_IMAGE}:latest"
                     }
