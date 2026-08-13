@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        // 1. Inject Docker Desktop executable path directly into Windows environment
-        PATH = "C:\\Users\\LAPTOP MART\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin;${env.PATH}"
+        // System32, PowerShell, and Docker Desktop paths combined
+        PATH = "C:\\Windows\\System32;C:\\Windows\\System32\\WindowsPowerShell\\v1.0;C:\\Users\\LAPTOP MART\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin;${env.PATH}"
         
         DOCKER_IMAGE = 'junaid2676/devops'
         IMAGE_TAG = 'v1'
@@ -30,9 +30,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                        // 2. PowerShell handles secret variables in memory safely without CMD echo corruption
                         powershell '$env:DOCKER_PASS | docker login -u $env:DOCKER_USER --password-stdin'
-                        
                         powershell "docker push ${DOCKER_IMAGE}:${IMAGE_TAG}"
                         powershell "docker push ${DOCKER_IMAGE}:latest"
                     }
