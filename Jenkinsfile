@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        // Inject Docker folder into PATH for Windows per-user install
+        // 1. Inject Docker Desktop executable path directly into Windows environment
         PATH = "C:\\Users\\LAPTOP MART\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin;${env.PATH}"
         
         DOCKER_IMAGE = 'junaid2676/devops'
@@ -27,18 +27,19 @@ pipeline {
         }
 
         stage('3. Push to Docker Hub') {
-    steps {
-        script {
-            withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                // PowerShell handles env variables safely in memory
-                powershell '$env:DOCKER_PASS | docker login -u $env:DOCKER_USER --password-stdin'
-                
-                powershell 'docker push junaid2676/devops:v1'
-                powershell 'docker push junaid2676/devops:latest'
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        // 2. PowerShell handles secret variables in memory safely without CMD echo corruption
+                        powershell '$env:DOCKER_PASS | docker login -u $env:DOCKER_USER --password-stdin'
+                        
+                        powershell "docker push ${DOCKER_IMAGE}:${IMAGE_TAG}"
+                        powershell "docker push ${DOCKER_IMAGE}:latest"
+                    }
+                }
             }
         }
     }
-}
 
     post {
         always {
