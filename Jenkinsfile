@@ -29,8 +29,8 @@ pipeline {
         stage('3. Push to Docker Hub') {
             steps {
                 script {
-                    // Native Jenkins Registry handling (Bypasses CMD/PowerShell string issues)
-                    docker.withRegistry('https://index.docker.io/v1/', 'docker-hub-credentials') {
+                    withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        bat "docker login -u %DOCKER_USER% -p %DOCKER_PASS%"
                         bat "docker push ${DOCKER_IMAGE}:${IMAGE_TAG}"
                         bat "docker push ${DOCKER_IMAGE}:latest"
                     }
