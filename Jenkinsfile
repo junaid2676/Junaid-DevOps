@@ -27,17 +27,18 @@ pipeline {
         }
 
         stage('3. Push to Docker Hub') {
-            steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                        bat "docker login -u %DOCKER_USER% -p %DOCKER_PASS%"
-                        bat "docker push ${DOCKER_IMAGE}:${IMAGE_TAG}"
-                        bat "docker push ${DOCKER_IMAGE}:latest"
-                    }
-                }
+    steps {
+        script {
+            withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                // PowerShell handles env variables safely in memory
+                powershell '$env:DOCKER_PASS | docker login -u $env:DOCKER_USER --password-stdin'
+                
+                powershell 'docker push junaid2676/devops:v1'
+                powershell 'docker push junaid2676/devops:latest'
             }
         }
     }
+}
 
     post {
         always {
