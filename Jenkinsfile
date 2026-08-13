@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     environment {
+        // Keeps System32, PowerShell, and Docker Desktop in PATH
         PATH = "C:\\Windows\\System32;C:\\Windows\\System32\\WindowsPowerShell\\v1.0;C:\\Users\\LAPTOP MART\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin;${env.PATH}"
         
         DOCKER_IMAGE = 'junaid2676/devops'
@@ -28,10 +29,10 @@ pipeline {
         stage('3. Push to Docker Hub') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                        powershell '$OutputEncoding = [System.Text.Encoding]::UTF8; $env:DOCKER_PASS | docker login -u $env:DOCKER_USER --password-stdin'
-                        powershell "docker push ${DOCKER_IMAGE}:${IMAGE_TAG}"
-                        powershell "docker push ${DOCKER_IMAGE}:latest"
+                    // Native Jenkins Registry handling (Bypasses CMD/PowerShell string issues)
+                    docker.withRegistry('https://index.docker.io/v1/', 'docker-hub-credentials') {
+                        bat "docker push ${DOCKER_IMAGE}:${IMAGE_TAG}"
+                        bat "docker push ${DOCKER_IMAGE}:latest"
                     }
                 }
             }
