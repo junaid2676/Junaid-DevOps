@@ -29,17 +29,14 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                        // Strips all hidden spaces, newlines, and CRLF characters automatically
-                        powershell '''
-                            $user = $env:DOCKER_USER.Trim()
-                            $pass = $env:DOCKER_PASS.Trim()
-                            [System.IO.File]::WriteAllText("pass.txt", $pass)
-                            Get-Content pass.txt | docker login -u $user --password-stdin
-                            Remove-Item pass.txt -ErrorAction SilentlyContinue
-                        '''
-                        
-                        powershell "docker push ${DOCKER_IMAGE}:${IMAGE_TAG}"
-                        powershell "docker push ${DOCKER_IMAGE}:latest"
+                        // Creates pass.txt with zero trailing newlines, logs in, then cleans up
+                        bat """
+                            echo | set /p="%DOCKER_PASS%" > pass.txt
+                            docker login -u %DOCKER_USER% --password-stdin < pass.txt
+                            if exist pass.txt del pass.txt
+                            docker push ${DOCKER_IMAGE}:${IMAGE_TAG}
+                            docker push ${DOCKER_IMAGE}:latest
+                        """
                     }
                 }
             }
