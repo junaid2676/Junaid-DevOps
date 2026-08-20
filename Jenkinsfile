@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'junaid2676/devops:v1'
+        DOCKER_IMAGE = 'junaiddevops21/devops:v1'
     }
 
     stages {
