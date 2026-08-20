@@ -9,5 +9,5 @@ def greet(name):
 
 if __name__ == "__main__":
     print(greet("Junaid"))
-    print(f"5 + 3 = {add_numbers(5, 3)}")
-    print(f"4 * 2 = {multiply_numbers(4, 2)}")
+    print(f"5 + 9 = {add_numbers(5, 9)}")
+    print(f"4 * 7 = {multiply_numbers(4, 7)}")
