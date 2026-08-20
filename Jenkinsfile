@@ -17,7 +17,10 @@ pipeline {
         }
         stage('3. Push to Docker Hub') {
             steps {
-                sh 'docker push junaid2676/devops:v1'
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                    sh 'docker push junaid2676/devops:v1'
+                }
             }
         }
     }
