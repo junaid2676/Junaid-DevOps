@@ -41,6 +41,22 @@ pipeline {
             }
         }
     }
+pipeline {
+    agent any
+    stages {
+        stage('Build and Push') {
+            steps {
+                echo 'Building and pushing Docker image...'
+                // Add your docker build and push steps here if not already present
+            }
+        }
+        stage('Deploy with Ansible') {
+            steps {
+                sh 'ansible-playbook -i ansible/inventory.ini ansible/site.yml'
+            }
+        }
+    }
+}
 
     post {
         always {
